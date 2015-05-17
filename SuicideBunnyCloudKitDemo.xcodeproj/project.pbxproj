@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		15EF5E801B08E6EA00E470AE /* ClouDkitAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = 15EF5E7F1B08E6E900E470AE /* ClouDkitAdvanced.m */; };
 		15F9454A1B06853900BD0C0B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 15F945491B06853900BD0C0B /* main.m */; };
 		15F9454D1B06853900BD0C0B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 15F9454C1B06853900BD0C0B /* AppDelegate.m */; };
 		15F945501B06853900BD0C0B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 15F9454F1B06853900BD0C0B /* ViewController.m */; };
@@ -14,6 +15,9 @@
 		15F945551B06853900BD0C0B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15F945541B06853900BD0C0B /* Images.xcassets */; };
 		15F945581B06853900BD0C0B /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15F945561B06853900BD0C0B /* LaunchScreen.xib */; };
 		15F945641B06853900BD0C0B /* SuicideBunnyCloudKitDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 15F945631B06853900BD0C0B /* SuicideBunnyCloudKitDemoTests.m */; };
+		15F9456F1B0694C200BD0C0B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F9456E1B0694C200BD0C0B /* CloudKit.framework */; };
+		15F945721B07799200BD0C0B /* CloudKitDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 15F945711B07799200BD0C0B /* CloudKitDemo.m */; };
+		15F945741B07B8E400BD0C0B /* suicide-bunny-death_103714.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 15F945731B07B8E400BD0C0B /* suicide-bunny-death_103714.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,6 +31,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		15EF5E7E1B08E6E900E470AE /* ClouDkitAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClouDkitAdvanced.h; sourceTree = "<group>"; };
+		15EF5E7F1B08E6E900E470AE /* ClouDkitAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClouDkitAdvanced.m; sourceTree = "<group>"; };
 		15F945441B06853900BD0C0B /* SuicideBunnyCloudKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuicideBunnyCloudKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		15F945481B06853900BD0C0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		15F945491B06853900BD0C0B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -40,6 +46,11 @@
 		15F9455D1B06853900BD0C0B /* SuicideBunnyCloudKitDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuicideBunnyCloudKitDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		15F945621B06853900BD0C0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		15F945631B06853900BD0C0B /* SuicideBunnyCloudKitDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SuicideBunnyCloudKitDemoTests.m; sourceTree = "<group>"; };
+		15F9456D1B0694A400BD0C0B /* SuicideBunnyCloudKitDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SuicideBunnyCloudKitDemo.entitlements; sourceTree = "<group>"; };
+		15F9456E1B0694C200BD0C0B /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		15F945701B07799200BD0C0B /* CloudKitDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudKitDemo.h; sourceTree = "<group>"; };
+		15F945711B07799200BD0C0B /* CloudKitDemo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloudKitDemo.m; sourceTree = "<group>"; };
+		15F945731B07B8E400BD0C0B /* suicide-bunny-death_103714.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "suicide-bunny-death_103714.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15F9456F1B0694C200BD0C0B /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +75,7 @@
 		15F9453B1B06853900BD0C0B = {
 			isa = PBXGroup;
 			children = (
+				15F9456E1B0694C200BD0C0B /* CloudKit.framework */,
 				15F945461B06853900BD0C0B /* SuicideBunnyCloudKitDemo */,
 				15F945601B06853900BD0C0B /* SuicideBunnyCloudKitDemoTests */,
 				15F945451B06853900BD0C0B /* Products */,
@@ -81,6 +94,7 @@
 		15F945461B06853900BD0C0B /* SuicideBunnyCloudKitDemo */ = {
 			isa = PBXGroup;
 			children = (
+				15F9456D1B0694A400BD0C0B /* SuicideBunnyCloudKitDemo.entitlements */,
 				15F9454B1B06853900BD0C0B /* AppDelegate.h */,
 				15F9454C1B06853900BD0C0B /* AppDelegate.m */,
 				15F9454E1B06853900BD0C0B /* ViewController.h */,
@@ -89,6 +103,10 @@
 				15F945541B06853900BD0C0B /* Images.xcassets */,
 				15F945561B06853900BD0C0B /* LaunchScreen.xib */,
 				15F945471B06853900BD0C0B /* Supporting Files */,
+				15F945701B07799200BD0C0B /* CloudKitDemo.h */,
+				15F945711B07799200BD0C0B /* CloudKitDemo.m */,
+				15EF5E7E1B08E6E900E470AE /* ClouDkitAdvanced.h */,
+				15EF5E7F1B08E6E900E470AE /* ClouDkitAdvanced.m */,
 			);
 			path = SuicideBunnyCloudKitDemo;
 			sourceTree = "<group>";
@@ -96,6 +114,7 @@
 		15F945471B06853900BD0C0B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				15F945731B07B8E400BD0C0B /* suicide-bunny-death_103714.jpg */,
 				15F945481B06853900BD0C0B /* Info.plist */,
 				15F945491B06853900BD0C0B /* main.m */,
 			);
@@ -168,6 +187,12 @@
 				TargetAttributes = {
 					15F945431B06853900BD0C0B = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = GZ43VN96YQ;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 					15F9455C1B06853900BD0C0B = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -201,6 +226,7 @@
 			files = (
 				15F945531B06853900BD0C0B /* Main.storyboard in Resources */,
 				15F945581B06853900BD0C0B /* LaunchScreen.xib in Resources */,
+				15F945741B07B8E400BD0C0B /* suicide-bunny-death_103714.jpg in Resources */,
 				15F945551B06853900BD0C0B /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -220,8 +246,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				15F945501B06853900BD0C0B /* ViewController.m in Sources */,
+				15F945721B07799200BD0C0B /* CloudKitDemo.m in Sources */,
 				15F9454D1B06853900BD0C0B /* AppDelegate.m in Sources */,
 				15F9454A1B06853900BD0C0B /* main.m in Sources */,
+				15EF5E801B08E6EA00E470AE /* ClouDkitAdvanced.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,7 +308,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Boobalan B (KP78QAX9ST)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Boobalan B (KP78QAX9ST)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -302,6 +331,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "ceeb96e8-29f8-46fa-9f5e-56dc6adad199";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -324,7 +354,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Boobalan B (KP78QAX9ST)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Boobalan B (KP78QAX9ST)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -339,6 +370,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "ceeb96e8-29f8-46fa-9f5e-56dc6adad199";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -349,9 +381,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SuicideBunnyCloudKitDemo/SuicideBunnyCloudKitDemo.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = SuicideBunnyCloudKitDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -359,9 +395,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SuicideBunnyCloudKitDemo/SuicideBunnyCloudKitDemo.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = SuicideBunnyCloudKitDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -418,6 +458,7 @@
 				15F945691B06853900BD0C0B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		15F9456A1B06853900BD0C0B /* Build configuration list for PBXNativeTarget "SuicideBunnyCloudKitDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -426,6 +467,7 @@
 				15F9456C1B06853900BD0C0B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

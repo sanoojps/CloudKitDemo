@@ -1,0 +1,1141 @@
+//
+//  CloudKitDemo.m
+//  SuicideBunnyCloudKitDemo
+//
+//  Created by mar Jinn on 5/16/15.
+//  Copyright (c) 2015 mar Jinn. All rights reserved.
+//
+
+#import "CloudKitDemo.h"
+#import <libkern/OSAtomic.h>
+
+
+
+/*
+ 
+ CLOUDKIT
+ 
+ 
+ CONTAINER
+ within a CONTAINER are 2 different DATABASES
+ DATABASE Contains RECORDS
+ RECORDS are wrapped and Grouped within RECORD ZONES
+ RECORDS are identified using  a RECORD IDENTIFIER
+ RECORDS are related to one another via REFERENCES
+ bulk data is transferred via ASSETS
+ 
+ 
+ 1.Enable cloudkit
+ 2.Interaction with iCloudAccounts
+        if the usser is logged in then iCloud Account will be used to authneticate
+        if not READ-ONLY ANONYMOUS access
+ 3. Access to iCloud Servers
+        1.Public 
+            - all user can acess
+        2.Private
+            - private to user
+ 4. Both Structured and bulk data
+ 5. transport technology, No Local persistence
+
+ //Main
+ ------
+ 
+ Containers
+ Databases
+ Records
+ Record Zones
+ Record Identifiers
+ Reference
+ Assets
+ 
+ Containers
+ ----------
+ CKCOntainer
+ One container per app
+ Data Segregation - multiple calls ,no data mixing
+ User Encapsulation
+ Contents - Manged by the developer
+    - via the WWDR portal - Cloudkit dashboard
+    - Unique across all developers - reverese dns name
+ Can be shared between apps
+    - multiple application to single container
+    - one application to many containers
+ 
+ 
+ Databases
+ ----------
+ APP object replication
+ 
+    private data -
+    public data - shared data , may be  a community
+ 
+ 
+ PUBLIC DATABASE  - shared by all users of the app
+ PRIVATE DATABASE - Individual database for each user
+ 
+ CKDatabase
+ 
+ Every app has access to 2 databases
+    1.Public Database
+    2.Private database
+ 
+ 
+                        Public Database                         Private Database
+ 
+ Data Type              Shared data                             Current Users's Data
+ Account                Required For writing                    Required Reda/Write
+ Quota                  Developer                               User
+ Default Permissions    World Readable                          User Readable
+ Editing Permissions    iCloud Dashboard Roles(Roles with ACL)      N/A
+ 
+
+
+ RECORDS
+ --------
+ 
+ CKRecords
+    - how we get structured data in and out of database
+    - Wraps key value pairs
+    - Record type
+        - class in app ie type of classs that the data in app belongs to
+    - Just-in-time schema
+    - Metadata
+        - time 
+        - modified and who modified
+        - chmage tag - represents the specific version
+    - Record values
+        NSString
+        NSNumber
+        NSData
+        NSDate
+        CLLocation
+        CKReference
+        CKAsset
+        ARRAY of above
+ 
+ USES KVC
+ 
+ 
+ RECORD ZONES
+ ------------
+ 
+ - records grouping
+ - Multiple record Zone
+ - Default and Custom zone
+ - atomic commits and change tracking
+ 
+
+
+
+RECORD IDENTIFIER
+------------------
+ CKREcordID
+    - NSSTring Record name
+    - CKRecordZoneID* ZONE id
+ 
+ - Cretaed by client
+ - Fully noramalised
+ - external data set foreign key
+ 
+ - When creating a record if no recordID random UUID
+ - When creating a record if no zone     Means default Zone
+
+ REFERENCES
+ ----------
+ 
+ object relationship
+ 
+ party parent clown child
+ 
+ CKReference
+ 
+ Server Understands Relationship
+ 
+ Cascade Deletes - if parent deleted .children too will 
+ 
+ Dangling Pointers -
+ 
+ Back references - preferred
+                 - references go from parent to child
+ 
+ 
+ 
+ 
+ ASSETS
+ ------
+ 
+ CONTAINER- DATABASE - RECORD
+ 
+ 
+ USE BULK STORAGE
+ storing bulk data - server
+ 
+ CKAsset 
+ - 
+ Large unstructered data
+ Files on Disk
+ Owned by CKRecords
+ GarbageCollected
+ Efficient uploads and downloads
+ 
+ 
+ 
+ 
+ BIG DATA TINY PHONE
+ --------------------
+ - KEEP your large data in the cloud
+ - Clients view slice of the data
+ - Client view change
+ - CLient makes Queries
+ 
+ CKQuery
+ 
+ Combine a RecordType, a NSPredicate and NSSortDescriptor
+ 
+ supports only a subset
+ 
+ [NSPredicate predicateWithFormat:@"name = %@",partyName]; 
+ 
+ [NSPredicate predicateWithFormat:@"%K = %@",dynamicKey,partyName];
+ 
+ [NSPredicate predicateWithFormat:@"start > %@",[NSdate date];
+ 
+ //record wit either "session" and after
+ [NSPredicate predicateWithFormat:@"name = %ALL tokenize(%@, 'Cdl') IN allTokens",
+ @"after session"];
+ 
+ CLLOcation* location = 
+ [CLLocation alloc] initWIthLattitude:37.783 longitude:-122.404]
+ [NSPredicate predicateWithFormat:@"distanceToLocation:fromLocation:(Location, %@) < 100",
+ location];
+ 
+ NSPredicate predicateWithFormat:@"name = %@ AND startDate > %@",partyName,[NSDate date];
+ 
+ 
+ 
+ SUBSCRIPTIONS
+ ---------------
+ CKSubscription
+ 
+ COmbine a RecordType, a NSpredicate and PUSH
+ * push via APNS
+ * Augmented payload - cloudkit specific info
+ 
+ 
+ HANDLE PUSH
+ 
+ PUSH payl;oad will be parsed by using cloudkit as payload is generated by server
+ 
+ -(void)application:(UIapplication*)application
+    didRecieveRemoteNotification:(NSDictionary*)userInfo
+ {
+   CKNotification*cloudKitNotification = 
+   [CKNotification notificationFromRemoteNotificationdictionary:userInfo]
+ 
+ NSString* alertbody =  cloudKitNotification.alertBody
+ 
+ if (cloudKitNotification.notificationType = CKNotificationTypeQuery)
+ {
+    CKQueryNotification* queryNotification = cloudKitNotification;
+    CKRecordID* recordID = 
+ [queryNotification recordID];
+ 
+ }
+ }
+ 
+ 
+ CLOUDKIT USER ACCOUNTS
+ 
+ Identity
+ Metadata
+ Privacy
+Discovery 
+ 
+ 
+ Identity
+ --------
+ IDentifier is provided - COntainer scoped for use
+ 
+ USER Record ID
+    Stable identifier for this user - diff app for same user will return different ID
+    Scoped to the container
+    Inddependent API
+ 
+ MeTADATA
+ ---------
+ 
+ USerRecord
+ One per database
+ 
+ Treated like ordinary record
+ CKRecordTypeUserRecord
+ 
+ REserved by system -- we dont create
+ Cannot be Queried
+ 
+ 
+ PRIVACY
+ ------
+ No disclosure by default
+ 
+ DIsclosure requested by app - customer has to optin for discoverAbility
+ 
+ --permisison alert
+ 
+ @"Allow People using "Party" to Look You Up"
+ 
+ People who know your apple ID email address can find out that you use this app
+ 
+ 
+ DISCOVERY
+ ---------
+ 
+ GET RECORD ID 
+ SEND TO CONTAINER
+ IF USER HAS OPTED FOR DISCOVERABILTY WE GET INFO
+ 
+ EMAIL ID send to container
+ 
+ discover whole address book
+ 
+ 
+ dicover record id an info that is frinds with currently logged in icloud email id
+ 
+ take address book pass it to server -  
+ disocverability enabled users info is passed on
+ 
+ Input
+ 
+ - USER Record ID
+ - Email Address
+ - entire addtress book
+ 
+ Output
+ - User RecordID
+ - First and Last Name
+ - requires optin
+ 
+ 
+ 
+ WHEN TO USE CLOUDKIT
+ --------------------
+ 
+ iCloud Key Value Store
+    - async kept upto date
+    - Data limit contraints
+    - Great for Application preferences
+ 
+ iCloud Drive
+    - Simple API
+    - Full offline ccahe on OSX
+    - Unstructured
+    - Tied to the filesystem
+    - Great for document centric apps
+ 
+ iCloud Core Data
+    - Dta replicated to all devices
+    - Dtaa is isngle user
+    - Great for keeping private structured data in sync
+ 
+ CloudKit
+    - Public data
+    - Structured and Bulk data
+    - Large data set
+    - Use iCloud accounts
+    - Client directed data transfer
+ */
+
+
+
+
+@import CloudKit;
+
+#pragma mark MODEL CLASSES
+@interface Party : NSObject
+
+@property NSString* summary;
+@property NSDate* startDate;
+
+//BLOB
+@property CKAsset* screenplay;
+
+@end
+
+@implementation Party
+
+
+
+@end
+
+
+@interface Clown : NSObject
+
+//reference fom clown to Party
+//more like relationship
+@property CKReference* party;
+
+@end
+
+@implementation Clown
+
+
+
+@end
+
+
+
+
+static NSString* const CloudKitContainerID =
+@"iCloud..com.suicideBunny.closeQuarters.CloudKitDemo";
+
+@implementation CloudKitDemo
+
+
+#pragma mark CloudKitDemo
+void cloudKitDemoCalls (void)
+{
+    
+    
+    
+    //Container
+    CKContainer* defaultContainer = nil;
+    defaultContainer = [CKContainer defaultContainer];
+    
+    //or
+    CKContainer* customContainer = nil;
+    customContainer =
+    [CKContainer containerWithIdentifier:CloudKitContainerID];
+    
+    //CHECK ACCOUNT STATUS
+    //current users iCloud Acces
+    [customContainer accountStatusWithCompletionHandler:
+     ^(CKAccountStatus accountStatus, NSError *error) {
+        
+         switch (accountStatus)
+         {
+             case CKAccountStatusCouldNotDetermine:
+             {
+                 
+             }
+                 break;
+             case CKAccountStatusAvailable:
+             {
+                 
+             }
+                 break;
+             case CKAccountStatusRestricted:
+             {
+                 
+             }
+                 break;
+             case CKAccountStatusNoAccount:
+             {
+                
+             }
+                 break;
+                 
+             default:
+             {
+                 
+             }
+                 break;
+         }
+         
+    }];
+    
+    //APPLICATION PERMISSION
+    [defaultContainer statusForApplicationPermission:CKApplicationPermissionUserDiscoverability
+                                   completionHandler:
+     ^(CKApplicationPermissionStatus applicationPermissionStatus, NSError *error)
+    {
+        switch (applicationPermissionStatus)
+        {
+                /*
+                 Checks the status of the specified permission asynchronously.
+                 Use this method to determine the extra capabilities granted to your app by the user.
+                 If your app has not yet requested a specific permission,
+                 calling this method may yield the value
+                 "CKApplicationPermissionStatusInitialState"
+                 for the permission. When that value is returned, 
+                 call the "requestApplicationPermission:completion:" method
+                 to request the permission from the user.
+                 */
+            case CKApplicationPermissionStatusInitialState:
+            {
+                
+                [defaultContainer requestApplicationPermission:CKApplicationPermissionUserDiscoverability
+                                             completionHandler:
+                 ^(CKApplicationPermissionStatus applicationPermissionStatus, NSError *error)
+                 {
+                     switch (applicationPermissionStatus)
+                     {
+                         case CKApplicationPermissionStatusInitialState:
+                         {
+                             
+                         }
+                             break;
+                         case CKApplicationPermissionStatusCouldNotComplete:
+                         {
+                             
+                         }
+                             break;
+                         case CKApplicationPermissionStatusDenied:
+                         {
+                             
+                         }
+                             break;
+                         case CKApplicationPermissionStatusGranted:
+                         {
+                             
+                         }
+                             break;
+                             
+                         default:
+                         {
+                             
+                         }
+                             break;
+                     }
+                     
+                 }];
+
+            }
+                break;
+            case CKApplicationPermissionStatusCouldNotComplete:
+            {
+                
+            }
+                break;
+            case CKApplicationPermissionStatusDenied:
+            {
+                
+            }
+                break;
+            case CKApplicationPermissionStatusGranted:
+            {
+            
+            }
+                break;
+                
+            default:
+            {
+                
+            }
+                break;
+        }
+        
+    }];
+    
+    
+    //Database
+    CKDatabase* publicDataBase = nil;
+    publicDataBase =
+    [defaultContainer publicCloudDatabase];
+    
+    CKDatabase* privateDataBase = nil;
+    privateDataBase =
+    [defaultContainer privateCloudDatabase];
+ 
+    //RECORD - KVC and subscripting is allowed
+    //Type ID and ZONE
+    CKRecord* party = nil;
+    party = [[CKRecord alloc] initWithRecordType:@"Party"];
+    
+    //setting values
+    [party setObject:@"Post Presenttaion Beers"
+              forKey:@"summary"];
+    
+    NSDate* startDate = nil;
+    startDate = [NSDate dateWithTimeIntervalSinceNow:30.0f * 60.0f];
+    
+    party[@"startDate"] = startDate;
+    
+    
+    //Record With Record ID specified, if not provided random UUID
+    CKRecordID* wellKnownID = nil;
+    wellKnownID =
+    [[CKRecordID alloc] initWithRecordName:@"WellKnownParty"];
+    
+    CKRecord* wellKnownRecord = nil;
+    wellKnownRecord  =
+    [[CKRecord alloc] initWithRecordType:@"Party" recordID:wellKnownID];
+    
+    //ZONE
+    CKRecordZoneID* zodeID = nil;
+    zodeID =
+    [[CKRecordZoneID alloc] initWithZoneName:CKRecordZoneDefaultName
+                                   ownerName:CKOwnerDefaultName];
+    
+    CKRecordZone* recordZone = nil;
+    recordZone =
+    [[CKRecordZone alloc] initWithZoneID:zodeID];
+    
+    CKRecord* wellKnownRecordWithZone = nil;
+    wellKnownRecordWithZone  =
+    [[CKRecord alloc] initWithRecordType:@"Party"
+                                  zoneID:zodeID];
+    
+    
+    //REFERENCES ie, OBJECT RELATIONSSHIPS
+    
+    //party owns clown
+    //child
+    CKRecordID* clownRecordID = nil;
+    clownRecordID = [[CKRecordID alloc] initWithRecordName:@"ClownID"];
+    
+    CKRecord* clownRecord = nil;
+    clownRecord =  [[CKRecord alloc] initWithRecordType:@"Clown"
+                                               recordID:clownRecordID];
+    
+    //parent
+    CKRecord* partyWithClownRecord = nil;
+    partyWithClownRecord = [[CKRecord alloc] initWithRecordType:@"Party"];
+    
+    CKReference* referenceFromClownToParty = nil;
+    referenceFromClownToParty =
+    [[CKReference alloc] initWithRecord:partyWithClownRecord
+                                 action:CKReferenceActionNone];
+    
+    clownRecord[@"party"] = referenceFromClownToParty;
+    
+    
+    ///EDGE CASE - DANGLING POINTER ISSUE
+    /*
+     
+     1. You can make  a reference to a record using a record id
+     2. but there is no gaurnatee that the target of the reference exists
+            meaning the record whose id we used may have been deleted
+     3. In such a case we get a dangling pointer
+     4. This can also be the case if the record is deleted by a paralell opeattion while 
+            we were making  a reference
+     
+     */
+    
+//    CKRecordID* wellKnownID = nil;
+//    wellKnownID =
+//    [[CKRecordID alloc] initWithRecordName:@"WellKnownParty"];
+    
+    CKReference* wellKnownReference = nil;
+    wellKnownReference =
+    [[CKReference alloc] initWithRecordID:wellKnownID
+                                   action:CKReferenceActionNone];
+    
+    clownRecord[@"party"] = wellKnownReference;
+    
+    ///ADDING AN ASSET ie BULK DATA - CKAsset
+    NSURL* screenplayURL = nil;
+    screenplayURL =
+    [[NSBundle mainBundle] URLForResource:@"suicide-bunny-death_103714"
+                            withExtension:@"jpg"];
+    
+    CKAsset* screenPlayasset = nil;
+    screenPlayasset =
+    [[CKAsset alloc] initWithFileURL:screenplayURL];
+    
+    //add asset to CKRecord
+    CKRecord* partyRecordWithAsset = nil;
+    partyRecordWithAsset =
+    [[CKRecord alloc] initWithRecordType:@"Party"];
+    
+    partyRecordWithAsset[@"screenplay"] = screenPlayasset;
+    
+    
+    
+    
+    
+}
+
+#pragma mark SAVE
+void n0 (void)
+{
+    /**
+     *  CLOUDKIT CONVEINCE API
+     */
+    
+    /**
+     *  SAVE
+     * FETCH
+     * MODIFY
+     */
+    
+    /**
+     *  SAVE
+     */
+    /*
+     CKRecord created using CKRecordID
+     CKRecordID cretaed using CKREcordZONEID
+     */
+    
+    
+    //ZONE
+    CKRecordZoneID* zoneID = nil;
+    zoneID =
+    [[CKRecordZoneID alloc] initWithZoneName:CKRecordZoneDefaultName
+                                   ownerName:CKOwnerDefaultName];
+    
+    //RECORDID
+    CKRecordID* tobeSavedRecordID = nil;
+    tobeSavedRecordID =
+    [[CKRecordID alloc] initWithRecordName:@"Save_WellKnownParty_Version_2"
+                                    zoneID:zoneID];
+    
+    //RECORD
+    CKRecord* const save_party_record = [[CKRecord alloc] initWithRecordType:@"Party"
+                                                       recordID:tobeSavedRecordID];
+    
+    
+    Party* partyObj  = [Party new];
+    partyObj.startDate =  [NSDate date];
+    partyObj.summary    = @"AWESOME PARTY";
+    ///ADDING AN ASSET ie BULK DATA - CKAsset
+    NSURL* screenplayURL = nil;
+    screenplayURL =
+    [[NSBundle mainBundle] URLForResource:@"suicide-bunny-death_103714"
+                            withExtension:@"jpg"];
+    
+    CKAsset* screenPlayasset = nil;
+    screenPlayasset =
+    [[CKAsset alloc] initWithFileURL:screenplayURL];
+    
+    partyObj.screenplay = screenPlayasset;
+    
+    save_party_record[@"startDate"] = partyObj.startDate;
+    save_party_record[@"summary"] = partyObj.summary;
+    save_party_record[@"screenplay"] = partyObj.screenplay;
+
+    
+    
+    
+    //CONTAINER
+    //or - I think I have enabled only this one in the capabilities!!!
+    CKContainer* customContainer = nil;
+    customContainer =
+    [CKContainer containerWithIdentifier:CloudKitContainerID];
+    
+    //DATABASE
+    CKDatabase* toBeSavedDatabase = nil;
+    toBeSavedDatabase = [customContainer publicCloudDatabase];
+    
+    if (save_party_record)
+    {
+        //SAVE-asyncronously
+        int __block shouldKeepRunning = [@(YES) intValue];
+        
+        [toBeSavedDatabase saveRecord:save_party_record
+                    completionHandler:
+         ^(CKRecord *record, NSError *error)
+         {
+             NSLog(@"error %@\n on saving record %@",error,record);
+             if (error)
+             {
+                 //handle
+                 /**
+                  *  
+                  try 1
+                  
+                  error (null)
+                  on saving record <CKError 0x7ff600702e70: "Not Authenticated" (9/1002); "This request requires an authenticated account"; Retry after 3.0 seconds>
+                  
+                  try 2 - after signing in on simulator
+                  error (null)
+                  on saving record <CKError 0x7fcd9b217440: "Bad Container" (5/1014); "Couldn't get container configuration from the server for container "iCloud.com.suicideBunny.closeQuarters."">
+                  
+                  try 3 - after changing container to
+                            @"iCloud..com.suicideBunny.closeQuarters.CloudKitDemo";
+                  
+                  SAVEDDDDDDDDDDDD
+                  
+                  <CKRecord: 0x7ff008d01360; recordType=Party, recordID=Save_WellKnownParty:(_defaultZone:__defaultOwner__), recordChangeTag=i9ri7eeg>
+                  on saving record (null)
+                 
+                  
+                  try 4  with "Party" Record populated with Cutsom values
+                  
+                  error <CKError 0x7fddb2301950: "Network Failure" (4/-1003); "A server with the specified hostname could not be found.">
+                  on saving record (null)
+                  
+                  */
+                 
+                 
+             }
+             
+             OSAtomicCompareAndSwapIntBarrier
+             ([@(YES) intValue], [@(NO) intValue], &shouldKeepRunning);
+             
+             
+             //shouldKeepRunning = NO;
+             
+             
+         }];
+        
+        while ([[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                        beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]])
+        {
+            
+            if (shouldKeepRunning)
+            {
+                continue;
+            }
+            else
+            {
+                break;
+            }
+            
+        }
+    }
+    
+    
+   
+
+}
+
+#pragma mark FETCH AND MODIFY
+/**
+ *  FETCH AND MODIFY
+ */
+void n1 (void)
+{
+    
+    //get container
+    //get database
+    //get recordID
+    
+    CKContainer* container =
+    [CKContainer defaultContainer];
+    
+    //or - I think I have enabled only this one in the capabilities!!!
+    CKContainer* customContainer = nil;
+    customContainer =
+    [CKContainer containerWithIdentifier:CloudKitContainerID];
+    
+    CKDatabase* database =
+    //[container publicCloudDatabase];
+    [customContainer publicCloudDatabase];
+    
+    
+    //ZONE
+    CKRecordZoneID* zoneID = nil;
+    zoneID =
+    [[CKRecordZoneID alloc] initWithZoneName:CKRecordZoneDefaultName
+                                   ownerName:CKOwnerDefaultName];
+    
+    //RECORDID
+    CKRecordID* tobeSavedRecordID = nil;
+    tobeSavedRecordID =
+    [[CKRecordID alloc] initWithRecordName:@"Save_WellKnownParty"
+                                    zoneID:zoneID];
+    
+    
+    //FETCH-asyncronously- different Queue
+    //Thread 7Queue : com.apple.cloudkit.operation.callback (serial)
+
+    int __block shouldKeepRunning = [@(YES) intValue];
+    [database fetchRecordWithID:tobeSavedRecordID
+              completionHandler:
+     ^(CKRecord *record, NSError *error)
+    {
+        NSLog(@"error %@\n on saving record %@",error,record);
+        if (error)
+        {
+            //handle
+            
+        }
+        else
+        {
+            /**
+             *  MODIFY
+             */
+            NSDate* endDate = record[@"startDate"];
+            record[@"startDate"] = [endDate dateByAddingTimeInterval:30.0f * 60.0f];
+            
+            //SAVE
+            
+            //SAVE-asyncronously
+            int __block shouldKeepRunning = [@(YES) intValue];
+            
+            [database saveRecord:record
+               completionHandler:
+             ^(CKRecord *record, NSError *error)
+             {
+                 NSLog(@"error %@\n on saving record %@",error,record);
+                 if (error)
+                 {
+                     //handle
+                 }
+                 
+                 OSAtomicCompareAndSwapIntBarrier
+                 ([@(YES) intValue], [@(NO) intValue], &shouldKeepRunning);
+                 
+                 
+             }];
+            
+            
+            while (shouldKeepRunning)
+            {
+                
+                if ([[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                             beforeDate:[NSDate distantFuture]])
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+                
+            }
+
+            
+        }
+        
+        OSAtomicCompareAndSwapIntBarrier
+        ([@(YES) intValue], [@(NO) intValue], &shouldKeepRunning);
+    }];
+    
+    while (shouldKeepRunning)
+    {
+        
+        if ([[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                     beforeDate:[NSDate distantFuture]])
+        {
+            continue;
+        }
+        else
+        {
+            break;
+        }
+        
+    }
+
+}
+
+#pragma mark QUERY
+/**
+ *  QUERY
+ */
+void n2(void)
+{
+    /**
+     *  query predicate
+     */
+    NSPredicate* queryPredicate =
+    [NSPredicate predicateWithFormat:@"ALL tokenize(%@, 'Cdl') IN allTokens",@"AWESOME PARTY"];
+    
+    //or - I think I have enabled only this one in the capabilities!!!
+    CKContainer* customContainer = nil;
+    customContainer =
+    [CKContainer containerWithIdentifier:CloudKitContainerID];
+    
+    CKDatabase* database =
+    //[container publicCloudDatabase];
+    [customContainer publicCloudDatabase];
+
+    CKQuery* query =
+    [[CKQuery alloc] initWithRecordType:@"Party"
+                              predicate:queryPredicate];
+    
+    //ZONE
+    CKRecordZoneID* zoneID = nil;
+    zoneID =
+    [[CKRecordZoneID alloc] initWithZoneName:CKRecordZoneDefaultName
+                                   ownerName:CKOwnerDefaultName];
+    
+    [database performQuery:query
+              inZoneWithID:nil
+         completionHandler:^(NSArray *results, NSError *error)
+    {
+        NSLog(@"results : %@", results );
+        /*
+         results : (
+         "<CKRecord: 0x7fed2480b6f0; recordType=Party, recordID=Save_WellKnownParty_Version_2:(_defaultZone:__defaultOwner__), recordChangeTag=i9rjowtr, values={\n    screenplay = \"<CKAsset: 0x7fed24812b60; size=171025, path=\\\"/Users/marjinn/Library/Developer/CoreSimulator/Devices/BC0718B9-2A56-49FD-9F39-F1CDA36FEB5C/data/Containers/Data/Application/BBB1D2EC-664E-40F9-854D-7D3AB1C059F4/Library/Caches/CloudKit/Assets/85290EA6-D49A-4E9E-81BA-4F778459EE2D.017ec54ce18d788ff3c6482d382b55546774a2abf1\\\", signature=<017ec54c e18d788f f3c6482d 382b5554 6774a2ab f1>, UUID=85290EA6-D49A-4E9E-81BA-4F778459EE2D>\";\n    startDate = \"2015-05-16 21:27:02 +0000\";\n    summary = \"AWESOME PARTY\";\n}>"
+
+         */
+        
+        for (CKRecord* record in results)
+        {
+            NSLog(@"%@",record);
+        }
+        
+        NSLog(@"error : %@", error);
+    }];
+    
+}
+
+
+#pragma mark SUBSCRIPTION
+/**
+ *  SUBSCRIPTION - not tested
+ */
+void n3 (void)
+{
+    //Subscription combines an NSPredicate and CKSubscription
+    NSPredicate* predicate =
+    [NSPredicate predicateWithFormat:@"startDate > %@",[NSDate date]];
+    
+    CKSubscription* subscription =
+    [[CKSubscription alloc] initWithRecordType:@"Party"
+                                     predicate:predicate
+                                       options:CKSubscriptionOptionsFiresOnRecordCreation |
+     CKSubscriptionOptionsFiresOnRecordUpdate];
+    
+    //how to alert us
+    CKNotificationInfo* notificationInfo = nil;
+    notificationInfo = [CKNotificationInfo new];
+    notificationInfo.alertActionLocalizationKey =
+    NSLocalizedString(@"LOCAL_NOTIFICATION_KEY",  @"LOCAL_NOTIFICATION_KEY");//in localized
+    notificationInfo.soundName = @"Party.aiff";
+    notificationInfo.shouldBadge = YES;
+    
+    //SAVe subscription
+    
+    //get database
+    
+    //or - I think I have enabled only this one in the capabilities!!!
+    CKContainer* customContainer = nil;
+    customContainer =
+    [CKContainer containerWithIdentifier:CloudKitContainerID];
+    
+    CKDatabase* database =
+    //[container publicCloudDatabase];
+    [customContainer publicCloudDatabase];
+
+    
+    [database saveSubscription:subscription
+             completionHandler:
+     ^(CKSubscription *subscription, NSError *error)
+    {
+        if (error)
+        {
+            
+        }
+    }];
+    
+    
+}
+
+#pragma mark USER IDENTITY
+/**
+ *  SUBSCRIPTION
+ */
+void n4 (void)
+{
+    //or - I think I have enabled only this one in the capabilities!!!
+    CKContainer* customContainer = nil;
+    customContainer =
+    [CKContainer containerWithIdentifier:CloudKitContainerID];
+    
+    [customContainer fetchUserRecordIDWithCompletionHandler:
+     ^(CKRecordID *recordID, NSError *error)
+    {
+        /**
+         *  Printing description of recordID:
+         <CKRecordID: 0x7f900430b6c0; _768beabe60a7e38b8eacae48e093f325:(_defaultZone:__defaultOwner__)>
+         
+         (lldb) po [recordID recordName]
+         _768beabe60a7e38b8eacae48e093f325
+         
+         (lldb) po [recordID zoneID]
+         <CKRecordZoneID: 0x7f9001d13760; _defaultZone:__defaultOwner__>
+         
+         (lldb) po [[recordID zoneID] zoneName]
+         _defaultZone
+         
+         (lldb) po [[recordID zoneID] ownerName]
+         __defaultOwner__
+         
+         */
+    }];
+}
+
+#pragma mark USER METADATA
+/**
+ *  USER METADATA
+ */
+void n5 (void)
+{
+    //fetch record id and then fetch more data about it ie metadata
+    CKContainer* customContainer = nil;
+    customContainer =
+    [CKContainer containerWithIdentifier:CloudKitContainerID];
+    
+    [customContainer fetchUserRecordIDWithCompletionHandler:
+     ^(CKRecordID *recordID, NSError *error)
+     {
+         if (error)
+         {
+             
+         }
+         else
+         {
+             /**
+              *  extract record from the DB that belongs to the user
+              */
+             CKDatabase* database =
+             [customContainer publicCloudDatabase];
+             
+             [database fetchRecordWithID:recordID
+                       completionHandler:
+              ^(CKRecord *record, NSError *error)
+             {
+                 if (error)
+                 {
+                     NSLog(@"record : %@",record);
+                 }
+                 else
+                 {
+                     
+                 }
+                 
+             }];
+         }
+     }];
+}
+
+
+
+#pragma mark DISCOVERABILITY
+/**
+ *  USER METADATA
+ */
+void n6 (void)
+{
+    
+    CKContainer* customContainer = nil;
+    customContainer =
+    [CKContainer containerWithIdentifier:CloudKitContainerID];
+    
+    /**
+     *  all contacts user info
+     * ie all users who use this app who have opted in for discovery
+     */
+    [customContainer discoverAllContactUserInfosWithCompletionHandler:
+     ^(NSArray *userInfos, NSError *error)
+    {
+        if (error)
+        {
+            [customContainer requestApplicationPermission:CKApplicationPermissionUserDiscoverability completionHandler:
+             ^(CKApplicationPermissionStatus applicationPermissionStatus, NSError *error)
+            {
+                if (CKApplicationPermissionStatusGranted == applicationPermissionStatus)
+                {
+                    //try discovering again
+                    
+                }
+            }];
+        }
+        else
+        {
+            for (CKDiscoveredUserInfo* userInfo in userInfos)
+            {
+                NSLog(@"userInfo : %@",userInfo);
+            }
+        }
+    }];
+    
+}
+
+
+
+@end
+
+
